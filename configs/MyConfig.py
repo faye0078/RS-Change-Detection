@@ -6,7 +6,7 @@ def get_trainer_config():
     # params of training
     parser.add_argument(
         "--config", dest="cfg", help="The config file.",
-        default='D:/DPCode/software-cup/RS-Change-Detection/experiment/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml',
+        default='./experiment/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml',
         type=str)
     parser.add_argument(
         '--iters',

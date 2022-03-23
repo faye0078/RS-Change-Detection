@@ -1,13 +1,13 @@
-batch_size: 64
+batch_size: 16
 iters: 2000
 
 dataset:
-  batch_size: 64
-  num_workers: 8
+  batch_size: 16
+  num_workers: 1
   train_dataset:
     type: Dataset
-    dataset_root: D:/DPCode/software-cup/RS-Change-Detection/Datasets
-    train_path: Datasets/DSIFN-Dataset/train.lst
+    dataset_root: ./Datasets
+    train_path: ./Datasets/DSIFN-Dataset/train.lst
     num_classes: 2
     transforms:
       - type: Resize
@@ -20,8 +20,8 @@ dataset:
 
   val_dataset:
     type: Dataset
-    dataset_root: data/mini_supervisely
-    val_path: Datasets/DSIFN-Dataset/train.lst
+    dataset_root: ./Datasets
+    val_path: ./Datasets/DSIFN-Dataset/train.lst
     num_classes: 2
     transforms:
       - type: Resize
@@ -52,6 +52,7 @@ lr_scheduler:
 loss:
   types:
     - type: CrossEntropyLoss
+      ignore_index: 255
   coef: [1]
 
 model:
@@ -60,5 +61,4 @@ model:
     type: HRNet_W18_Small_V1
     align_corners: False
   num_classes: 2
-  pretrained: pretrained_model/fcn_hrnetw18_small_v1_humanseg_192x192/model.pdparams
   backbone_indices: [-1]

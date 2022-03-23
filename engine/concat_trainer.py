@@ -5,7 +5,7 @@ import shutil
 import numpy as np
 from utils.f1 import f1
 from paddleseg.core import infer
-from paddleseg.cvlibs import Config
+from configs.config import Config
 from paddleseg.utils import TimeAverager, calculate_eta, resume, logger, progbar, metrics
 from collections import deque
 from utils.yaml import _parse_from_yaml
@@ -103,7 +103,7 @@ class Trainer(object):
                     for i in range(len(loss_list)):
                         avg_loss_list[i] += loss_list[i].numpy()
                 batch_cost_averager.record(
-                    time.time() - batch_start, num_samples=self.origin_config.batch_size)
+                    time.time() - batch_start, num_samples=self.origin_config['batch_size'])
 
                 if (iter) % self.args.log_iters == 0 and local_rank == 0:
                     avg_loss /= self.args.log_iters

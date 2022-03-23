@@ -1,12 +1,15 @@
 from paddle.io import DataLoader, DistributedBatchSampler
 from Dataset import ConcatDataset, SplitDataset
+from utils.preprocess import make_transform
 
-def make_dataloader(args, concat=True): # TODO: 五折交叉验证等/args
+def make_dataloader(args, concat=True): # TODO: 五折交叉验证等
+    train_args = args.train_dataset
+    val_args = args.val_dataset
+    train_transforms = make_transform(train_args.transforms)
+    val_transforms = make_transform(val_args.transforms)
     if concat:
-        train_transforms = None
-        val_transforms = None
-        train_dataset = ConcatDataset(args.root_dir, args.train_path, None, train_transforms)
-        val_dataset = ConcatDataset(args.root_dir, args.val_path, None, val_transforms)
+        train_dataset = ConcatDataset(train_args.dataset_root, train_args.train_path, None, train_transforms)
+        val_dataset = ConcatDataset(val_args.root_dir, val_args.val_path, None, val_transforms)
 
         train_batch_sampler = DistributedBatchSampler(
             train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
@@ -27,7 +30,7 @@ def make_dataloader(args, concat=True): # TODO: 五折交叉验证等/args
             num_workers=args.num_workers,
             return_list=True,
         )
-        return train_loader, val_loader
+        return train_dataset, val_dataset, train_loader, val_loader
 
     else:
         train_transforms = None
@@ -54,4 +57,4 @@ def make_dataloader(args, concat=True): # TODO: 五折交叉验证等/args
             num_workers=args.num_workers,
             return_list=True,
         )
-        return train_loader, val_loader
+        return train_dataset, val_dataset, train_loader, val_loader

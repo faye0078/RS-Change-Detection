@@ -1,32 +1,33 @@
 batch_size: 64
 iters: 2000
 
-train_dataset:
-  type: Dataset
-  dataset_root: data/mini_supervisely
-  train_path: data/mini_supervisely/train.txt
-  num_classes: 2
-  transforms:
-    - type: Resize
-      target_size: [192, 192]
-    - type: RandomHorizontalFlip
-    - type: RandomDistort
-      brightness_range: 0.4
-      contrast_range: 0.4
-      saturation_range: 0.4
-    - type: Normalize
-  mode: train
+dataset:
+  train_dataset:
+    type: Dataset
+    dataset_root: data/mini_supervisely
+    train_path: data/mini_supervisely/train.txt
+    num_classes: 2
+    transforms:
+      - type: Resize
+        target_size: [192, 192]
+      - type: RandomHorizontalFlip
+      - type: RandomDistort
+        brightness_range: 0.4
+        contrast_range: 0.4
+        saturation_range: 0.4
+      - type: Normalize
+    mode: train
 
-val_dataset:
-  type: Dataset
-  dataset_root: data/mini_supervisely
-  val_path: data/mini_supervisely/val.txt
-  num_classes: 2
-  transforms:
-    - type: Resize
-      target_size: [192, 192]
-    - type: Normalize
-  mode: val
+  val_dataset:
+    type: Dataset
+    dataset_root: data/mini_supervisely
+    val_path: data/mini_supervisely/val.txt
+    num_classes: 2
+    transforms:
+      - type: Resize
+        target_size: [192, 192]
+      - type: Normalize
+    mode: val
 
 export:
   transforms:

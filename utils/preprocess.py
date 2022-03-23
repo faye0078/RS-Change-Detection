@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image
-
+from paddleseg.transforms import *
 
 class Compose:
     """
@@ -64,3 +64,11 @@ class Compose:
 
         im2 = np.transpose(im2, (2, 0, 1))
         return (im1, im2, label)
+
+def make_transform(args):
+    transform = []
+    for trans in args:
+        type = trans.type
+        transform.append(getattr(type)(**trans.pop(0)))
+    return transform
+

@@ -2,21 +2,29 @@ import paddle
 import os
 import time
 import shutil
+import numpy as np
+from utils.f1 import f1
+from paddleseg.core import infer
 from paddleseg.cvlibs import Config
-from paddleseg.utils import TimeAverager, calculate_eta, resume, logger
+from paddleseg.utils import TimeAverager, calculate_eta, resume, logger, progbar, metrics
 from collections import deque
 from utils.yaml import _parse_from_yaml
 from utils.loss import loss_computation
-from configs.Config import get_trainer_config
+from utils.preprocess import make_transform
+from configs.MyConfig import get_trainer_config
 from dataloader import make_dataloader
 
 class Trainer(object):
     def __init__(self, args):
         self.args = args
         cfg = Config(args.cfg)
-        dataset_config = _parse_from_yaml(args.cfg)
+        self.origin_config = _parse_from_yaml(args.cfg)
 
-        self.train_loader, self.val_loader = make_dataloader(dataset_config, True)
+        self.train_set, self.val_set, self.train_loader, self.val_loader = make_dataloader(self.origin_config.dataset, True)
+
+        self.val_transforms = make_transform(self.origin_config.dataset.val_dataset.transforms)
+        self.nclasses = self.origin_config.model.num_classes
+
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
         self.model = cfg.model
@@ -24,22 +32,11 @@ class Trainer(object):
         if self.args.resume_model is not None:
             self.start_iter = resume(self.model, self.optimizer, self.args.resume_model)
         self.start_iter = 0
-        train(
-            cfg.model,
-            train_dataset,
-            val_dataset=val_dataset,
-            optimizer=cfg.optimizer,
-            save_dir=args.save_dir,
-            iters=cfg.iters,
-            batch_size=cfg.batch_size,
-            resume_model=args.resume_model,
-            save_interval=args.save_interval,
-            log_iters=args.log_iters,
-            num_workers=args.num_workers,
-            use_vdl=args.use_vdl,
-            losses=losses,
-            keep_checkpoint_max=args.keep_checkpoint_max)
-    def train(self, iters):
+
+
+    def train(self, iters=None):
+        if iters == None:
+            iters = self.origin_config.iters
         self.model.train()
         nranks = paddle.distributed.ParallelEnv().nranks
         local_rank = paddle.distributed.ParallelEnv().local_rank
@@ -65,7 +62,7 @@ class Trainer(object):
         avg_loss = 0.0
         avg_loss_list = []
         iters_per_epoch = len(self.train_loader)
-        best_mean_iou = -1.0
+        best_f1 = -1.0
         best_model_iter = -1
         reader_cost_averager = TimeAverager()
         batch_cost_averager = TimeAverager()
@@ -106,7 +103,7 @@ class Trainer(object):
                     for i in range(len(loss_list)):
                         avg_loss_list[i] += loss_list[i].numpy()
                 batch_cost_averager.record(
-                    time.time() - batch_start, num_samples=batch_size)
+                    time.time() - batch_start, num_samples=self.origin_config.batch_size)
 
                 if (iter) % self.args.log_iters == 0 and local_rank == 0:
                     avg_loss /= self.args.log_iters
@@ -142,10 +139,9 @@ class Trainer(object):
                     reader_cost_averager.reset()
                     batch_cost_averager.reset()
 
-                if (iter % self.args.save_interval == 0
-                    or iter == iters) and (self.val_loader is not None):
+                if (iter % self.args.save_interval == 0 or iter == iters) and (self.val_loader is not None):
                     num_workers = 1 if num_workers > 0 else 0
-                    mean_iou, acc, class_iou, _, _ = self.val()
+                    f1, class_f1, mean_iou, acc, class_iou, _, _ = self.val()
                     self.model.train()
 
                 if (iter % self.args.save_interval == 0 or iter == iters) and local_rank == 0:
@@ -163,8 +159,8 @@ class Trainer(object):
                         shutil.rmtree(model_to_remove)
 
                     if self.val_loader is not None:
-                        if mean_iou > best_mean_iou:
-                            best_mean_iou = mean_iou
+                        if f1 > best_f1:
+                            best_f1 = f1
                             best_model_iter = iter
                             best_model_dir = os.path.join(self.args.save_dir, "best_model")
                             paddle.save(
@@ -172,13 +168,13 @@ class Trainer(object):
                                 os.path.join(best_model_dir, 'model.pdparams'))
                         logger.info(
                             '[EVAL] The model with the best validation mIoU ({:.4f}) was saved at iter {}.'
-                                .format(best_mean_iou, best_model_iter))
+                                .format(best_f1, best_model_iter))
 
                         if self.args.use_vdl:
-                            log_writer.add_scalar('Evaluate/mIoU', mean_iou, iter)
-                            for i, iou in enumerate(class_iou):
+                            log_writer.add_scalar('Evaluate/F1', f1, iter)
+                            for i, f1 in enumerate(class_f1):
                                 log_writer.add_scalar('Evaluate/IoU {}'.format(i),
-                                                      float(iou), iter)
+                                                      float(f1), iter)
 
                             log_writer.add_scalar('Evaluate/Acc', acc, iter)
                 batch_start = time.time()
@@ -200,9 +196,99 @@ class Trainer(object):
         if self.use_vdl:
             log_writer.close()
 
-    def val(self):# TODO: validation function
-        a, b, c, d, e = 0
-        return a, b, c, d, e
+    def val(self):
+        self.model.eval()
+        nranks = paddle.distributed.ParallelEnv().nranks
+        local_rank = paddle.distributed.ParallelEnv().local_rank
+        if nranks > 1:
+            # Initialize parallel environment if not done.
+            if not paddle.distributed.parallel.parallel_helper._is_parallel_ctx_initialized(
+            ):
+                paddle.distributed.init_parallel_env()
+
+        total_iters = len(self.val_loader)
+        intersect_area_all = 0
+        pred_area_all = 0
+        label_area_all = 0
+        logits_all = None
+        label_all = None
+
+        logger.info(
+            "Start evaluating (total_iters: {})...".format(total_iters))
+        progbar_val = progbar.Progbar(
+            target=total_iters, verbose=1 if nranks < 2 else 2)
+        reader_cost_averager = TimeAverager()
+        batch_cost_averager = TimeAverager()
+        batch_start = time.time()
+        with paddle.no_grad():
+            for iter, (im, label) in enumerate(self.val_loader):
+                reader_cost_averager.record(time.time() - batch_start)
+                label = label.astype('int64')
+
+                ori_shape = label.shape[-2:]
+                pred, logits = infer.inference(
+                    self.model,
+                    im,
+                    ori_shape=ori_shape,
+                    transforms=self.val_transforms)
+
+                intersect_area, pred_area, label_area = metrics.calculate_area(
+                    pred,
+                    label,
+                    self.nclasses)
+
+                # Gather from all ranks
+                if nranks > 1:
+                    intersect_area_list = []
+                    pred_area_list = []
+                    label_area_list = []
+                    paddle.distributed.all_gather(intersect_area_list,
+                                                  intersect_area)
+                    paddle.distributed.all_gather(pred_area_list, pred_area)
+                    paddle.distributed.all_gather(label_area_list, label_area)
+
+                    # Some image has been evaluated and should be eliminated in last iter
+                    if (iter + 1) * nranks > len(self.val_set):
+                        valid = len(self.val_set) - iter * nranks
+                        intersect_area_list = intersect_area_list[:valid]
+                        pred_area_list = pred_area_list[:valid]
+                        label_area_list = label_area_list[:valid]
+
+                    for i in range(len(intersect_area_list)):
+                        intersect_area_all = intersect_area_all + intersect_area_list[
+                            i]
+                        pred_area_all = pred_area_all + pred_area_list[i]
+                        label_area_all = label_area_all + label_area_list[i]
+                else:
+                    intersect_area_all = intersect_area_all + intersect_area
+                    pred_area_all = pred_area_all + pred_area
+                    label_area_all = label_area_all + label_area
+
+                batch_cost_averager.record(
+                    time.time() - batch_start, num_samples=len(label))
+                batch_cost = batch_cost_averager.get_average()
+                reader_cost = reader_cost_averager.get_average()
+
+                if local_rank == 0:
+                    progbar_val.update(iter + 1, [('batch_cost', batch_cost),
+                                                  ('reader cost', reader_cost)])
+                reader_cost_averager.reset()
+                batch_cost_averager.reset()
+                batch_start = time.time()
+
+        class_iou, miou = metrics.mean_iou(intersect_area_all, pred_area_all, label_area_all)
+        class_acc, acc = metrics.accuracy(intersect_area_all, pred_area_all)
+        kappa = metrics.kappa(intersect_area_all, pred_area_all, label_area_all)
+        class_dice, mdice = metrics.dice(intersect_area_all, pred_area_all, label_area_all)
+        class_f1, all_f1 = f1(intersect_area_all, pred_area_all, label_area_all)
+
+        infor = "[EVAL] #Images: {} F1: {:.4f} class_f1: {} mIoU: {:.4f} Acc: {:.4f} Kappa: {:.4f} Dice: {:.4f}".format(
+            len(self.val_set), all_f1,class_f1, miou, acc, kappa, mdice)
+        infor = infor
+        logger.info(infor)
+        logger.info("[EVAL] Class IoU: \n" + str(np.round(class_iou, 4)))
+        logger.info("[EVAL] Class Acc: \n" + str(np.round(class_acc, 4)))
+        return f1, class_f1, miou, acc, class_iou, class_acc, kappa
 
 if __name__ == '__main__':
     args = get_trainer_config()

@@ -3,11 +3,11 @@ iters: 2000
 
 dataset:
   batch_size: 16
-  num_workers: 1
+  num_workers: 4
   train_dataset:
     type: Dataset
-    dataset_root: ../../data/data134429
-    train_path: ../../data/data134429/DSIFN-Dataset/train.lst
+    dataset_root: ../data/data134429
+    train_path: ../data/data134429/DSIFN-Dataset/train.lst
     num_classes: 2
     transforms:
       - type: Resize
@@ -20,8 +20,8 @@ dataset:
 
   val_dataset:
     type: Dataset
-    dataset_root: ../../data/data134429
-    val_path: ../../data/data134429/DSIFN-Dataset/val.lst
+    dataset_root: ../data/data134429
+    val_path: ../data/data134429/DSIFN-Dataset/val.lst
     num_classes: 2
     transforms:
       - type: Resize

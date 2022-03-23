@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="dell@e80e6df1b5a94137.natapp.cc:30055 password (1)">
     <serverData>
       <paths name="dell@e80e6df1b5a94137.natapp.cc:30055">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/media/dell/DATA/wy/RS-Change-Detection" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/.idea" />
+          </excludedPaths>
         </serverdata>
       </paths>
       <paths name="dell@e80e6df1b5a94137.natapp.cc:30055 password">
@@ -16,6 +19,14 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="dell@e80e6df1b5a94137.natapp.cc:30055 password (1)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/media/dell/DATA/wy/RS-Change-Detection" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

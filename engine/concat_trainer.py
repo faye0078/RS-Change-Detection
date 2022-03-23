@@ -140,7 +140,6 @@ class Trainer(object):
                     batch_cost_averager.reset()
 
                 if (iter % self.args.save_interval == 0 or iter == iters) and (self.val_loader is not None):
-                    num_workers = 1 if num_workers > 0 else 0
                     f1, class_f1, mean_iou, acc, class_iou, _, _ = self.val()
                     self.model.train()
 
@@ -288,7 +287,7 @@ class Trainer(object):
         logger.info(infor)
         logger.info("[EVAL] Class IoU: \n" + str(np.round(class_iou, 4)))
         logger.info("[EVAL] Class Acc: \n" + str(np.round(class_acc, 4)))
-        return f1, class_f1, miou, acc, class_iou, class_acc, kappa
+        return all_f1, class_f1, miou, acc, class_iou, class_acc, kappa
 
 if __name__ == '__main__':
     args = get_trainer_config()

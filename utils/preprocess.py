@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 from PIL import Image
-from paddleseg.transforms import *
+import paddleseg
+import importlib
 
 class Compose:
     """
@@ -67,8 +68,11 @@ class Compose:
 
 def make_transform(args):
     transform = []
+    modelImport = importlib.import_module('paddleseg.transforms.transforms')
     for trans in args:
-        type = trans.type
-        transform.append(getattr(type)(**trans.pop(0)))
+        trans_op = getattr(modelImport, trans['type'])
+        tem_trans = trans.copy()
+        tem_trans.pop('type')
+        transform.append(trans_op(**tem_trans))
     return transform
 

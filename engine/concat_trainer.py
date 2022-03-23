@@ -20,10 +20,10 @@ class Trainer(object):
         cfg = Config(args.cfg)
         self.origin_config = _parse_from_yaml(args.cfg)
 
-        self.train_set, self.val_set, self.train_loader, self.val_loader = make_dataloader(self.origin_config.dataset, True)
+        self.train_set, self.val_set, self.train_loader, self.val_loader = make_dataloader(self.origin_config['dataset'], True)
 
-        self.val_transforms = make_transform(self.origin_config.dataset.val_dataset.transforms)
-        self.nclasses = self.origin_config.model.num_classes
+        self.val_transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms']) #
+        self.nclasses = self.origin_config['model']['num_classes']
 
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
@@ -36,7 +36,7 @@ class Trainer(object):
 
     def train(self, iters=None):
         if iters == None:
-            iters = self.origin_config.iters
+            iters = self.origin_config['iters']
         self.model.train()
         nranks = paddle.distributed.ParallelEnv().nranks
         local_rank = paddle.distributed.ParallelEnv().local_rank

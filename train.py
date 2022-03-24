@@ -1,4 +1,5 @@
 from engine.concat_trainer import Trainer as ConcatTrainer
+from engine.split_trainer import Trainer as SplitTrainer
 from configs.MyConfig import get_trainer_config
 
 def main():

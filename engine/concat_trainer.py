@@ -3,6 +3,7 @@ import os
 import time
 import shutil
 import numpy as np
+from paddleseg.models.fcn import FCN
 from utils.f1 import f1
 from paddleseg.core import infer
 from configs.config import Config
@@ -10,6 +11,7 @@ from paddleseg.utils import TimeAverager, calculate_eta, resume, logger, progbar
 from collections import deque
 from utils.yaml import _parse_from_yaml
 from utils.loss import loss_computation
+from model.backbone.hrnet import HRNet_W48
 from utils.preprocess import make_transform
 from configs.MyConfig import get_trainer_config
 from dataloader import make_dataloader
@@ -27,7 +29,7 @@ class Trainer(object):
 
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
-        self.model = cfg.model
+        self.model = FCN(self.nclasses, HRNet_W48())
 
         if self.args.resume_model is not None:
             self.start_iter = resume(self.model, self.optimizer, self.args.resume_model)

@@ -43,7 +43,7 @@ def get_trainer_config():
         dest='save_dir',
         help='The directory for saving the model snapshot',
         type=str,
-        default='D:/DPCode/software-cup/PaddleSeg/contrib/PP-HumanSeg/saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely')
+        default='./saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely')
     parser.add_argument(
         '--keep_checkpoint_max',
         dest='keep_checkpoint_max',

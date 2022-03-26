@@ -68,7 +68,7 @@ class Compose:
 
 def make_transform(args):
     transform = []
-    modelImport = importlib.import_module('paddleseg.transforms.transforms')
+    modelImport = importlib.import_module('utils.transforms')
     for trans in args:
         trans_op = getattr(modelImport, trans['type'])
         tem_trans = trans.copy()

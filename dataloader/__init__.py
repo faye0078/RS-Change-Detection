@@ -33,10 +33,12 @@ def make_dataloader(args, concat=True): # TODO: 五折交叉验证等
         return train_dataset, val_dataset, train_loader, val_loader
 
     else:
-        train_transforms = None
-        val_transforms = None
-        train_dataset = SplitDataset(args['dataset_root'], args['train_path'], None, train_transforms)
-        val_dataset = SplitDataset(args['dataset_root'], args['val_path'], None, val_transforms)
+        train_args = args['train_dataset']
+        val_args = args['val_dataset']
+        train_transforms = make_transform(train_args['transforms'])
+        val_transforms = make_transform(val_args['transforms'])
+        train_dataset = SplitDataset(train_args['dataset_root'], train_args['train_path'], None, train_transforms)
+        val_dataset = SplitDataset(val_args['dataset_root'], val_args['val_path'], None, val_transforms)
 
         train_batch_sampler = DistributedBatchSampler(
             train_dataset, batch_size=args['batch_size'], shuffle=True, drop_last=True)

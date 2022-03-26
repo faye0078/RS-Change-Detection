@@ -8,6 +8,7 @@ def main():
     paddle.device.set_device("gpu")
     args = get_trainer_config()
     trainer = ConcatTrainer(args)
+    # trainer = SplitTrainer(args)
     trainer.train()
 
 

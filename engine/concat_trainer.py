@@ -11,7 +11,7 @@ from paddleseg.utils import TimeAverager, calculate_eta, resume, logger, progbar
 from collections import deque
 from utils.yaml import _parse_from_yaml
 from utils.loss import loss_computation
-from model.backbone.hrnet import HRNet_W48
+from model.concat_model import get_concat_model
 from utils.preprocess import make_transform
 from configs.MyConfig import get_trainer_config
 from dataloader import make_dataloader
@@ -26,10 +26,10 @@ class Trainer(object):
 
         self.val_transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms']) #
         self.nclasses = self.origin_config['model']['num_classes']
-
+        
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
-        self.model = FCN(self.nclasses, HRNet_W48())
+        self.model = get_concat_model(self.nclasses, 'hrnet', 'fcn')
 
         if self.args.resume_model is not None:
             self.start_iter = resume(self.model, self.optimizer, self.args.resume_model)

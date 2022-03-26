@@ -3,7 +3,7 @@ import os
 import time
 import shutil
 import numpy as np
-from paddleseg.models.fcn import FCN
+from model.split_model import get_split_model
 from utils.f1 import f1
 from paddleseg.core import infer
 from configs.config import Config
@@ -29,7 +29,7 @@ class Trainer(object):
 
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
-        self.model = FCN(self.nclasses, HRNet_W48()) # TODO: add split model
+        self.model = get_split_model(self.nclasses, 'hrnet', 'hrnet', 'fcn')
 
         if self.args.resume_model is not None:
             self.start_iter = resume(self.model, self.optimizer, self.args.resume_model)

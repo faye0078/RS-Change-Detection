@@ -20,6 +20,7 @@ import math
 from paddleseg import utils
 from model.concat_model import get_concat_model
 from model.split_model import get_split_model
+from utils.preprocess import Compose
 from utils.preprocess import make_transform
 from dataloader import make_dataloader
 from utils.yaml import _parse_from_yaml
@@ -33,7 +34,8 @@ class Predicter(object):
 
         _, self.val_dataset, _, _ = make_dataloader(self.origin_config['dataset'], True)
 
-        self.transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms'])  #
+        transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms'])  #
+        self.transforms = Compose(transforms, concat=True)
         self.nclasses = self.origin_config['model']['num_classes']
 
         self.model = get_concat_model(self.nclasses, 'hrnet', 'fcn')
@@ -42,9 +44,7 @@ class Predicter(object):
         if args.resume_model is not None:
             logger.info('Resume model from {}'.format(args.resume_model))
             if os.path.exists(args.resume_model):
-                resume_model = os.path.normpath(args.resume_model)
-                ckpt_path = os.path.join(resume_model, 'model.pdparams')
-                para_state_dict = paddle.load(ckpt_path)
+                para_state_dict = paddle.load(args.resume_model)
                 self.model.set_state_dict(para_state_dict)
             # utils.utils.load_entire_model(self.model, args.resume_model) TODO: compare
 
@@ -53,11 +53,10 @@ class Predicter(object):
                 'The verification dataset is not specified in the configuration file.'
             )
 
-        image_list, image_dir = get_image_list(args.image_path)
-        logger.info('Number of predict images = {}'.format(len(image_list)))
+        self.image_list, self.image_dir = get_image_list(args.image1_path)
+        logger.info('Number of predict images = {}'.format(len(self.image_list)))
 
     def predict(self,
-            image_dir=None,
             save_dir='output',
             aug_pred=False,
             scales=1.0,
@@ -78,17 +77,19 @@ class Predicter(object):
 
         added_saved_dir = os.path.join(save_dir, 'added_prediction')
         pred_saved_dir = os.path.join(save_dir, 'pseudo_color_prediction')
+        pred_bin_saved_dir = os.path.join(save_dir, 'pseudo_binary_prediction')
 
         logger.info("Start to predict...")
         progbar_pred = progbar.Progbar(target=len(img_lists[0]), verbose=1)
         color_map = visualize.get_color_map_list(256, custom_color=custom_color)
         with paddle.no_grad():
             for i, im_path in enumerate(img_lists[local_rank]):
-                im = cv2.imread(im_path)
-                ori_shape = im.shape[:2]
-                im, _ = self.transforms(im)
-                im = im[np.newaxis, ...]
+                im1 = cv2.imread(im_path)
+                im2 = cv2.imread(im_path.replace('t1', 't2'))
+                ori_shape = im1.shape[:2]
+                im, _ = self.transforms(im1, im2)
                 im = paddle.to_tensor(im)
+                im = im.unsqueeze(0)
 
                 if aug_pred:
                     pred, _  = infer.aug_inference(
@@ -115,8 +116,8 @@ class Predicter(object):
                 pred = pred.numpy().astype('uint8')
 
                 # get the saved name
-                if image_dir is not None:
-                    im_file = im_path.replace(image_dir, '')
+                if self.image_dir is not None:
+                    im_file = im_path.replace(self.image_dir, '')
                 else:
                     im_file = os.path.basename(im_path)
                 if im_file[0] == '/' or im_file[0] == '\\':
@@ -137,10 +138,13 @@ class Predicter(object):
                 mkdir(pred_saved_path)
                 pred_mask.save(pred_saved_path)
 
-                # pred_im = utils.visualize(im_path, pred, weight=0.0)
-                # pred_saved_path = os.path.join(pred_saved_dir, im_file)
-                # mkdir(pred_saved_path)
-                # cv2.imwrite(pred_saved_path, pred_im)
+                # save the binary image
+                pred[pred==1] = 255
+                pred_bin_saved_path = os.path.join(
+                    pred_bin_saved_dir,
+                    os.path.splitext(im_file)[0] + ".png")
+                mkdir(pred_bin_saved_path)
+                cv2.imwrite(pred_bin_saved_path, pred)
 
                 progbar_pred.update(i + 1)
 

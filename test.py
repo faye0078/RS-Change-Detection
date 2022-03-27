@@ -27,7 +27,7 @@ from paddleseg.utils import get_sys_env, logger
 
 def main(args):
     env_info = get_sys_env()
-    place = 'gpu' if env_info['Paddle compiled with cuda'] and env_info[
+    place = 'gpu:2' if env_info['Paddle compiled with cuda'] and env_info[
         'GPUs used'] else 'cpu'
 
     paddle.set_device(place)
@@ -35,9 +35,7 @@ def main(args):
         raise RuntimeError('No configuration file specified.')
     predicter = Predicter(args)
     predicter.predict(
-        image_dir=args.image_dir,
-        save_dir=args.save_dir,
-        aug_pred=args.aug_pred,
+        save_dir=args.save_dir
     )
 
 if __name__ == '__main__':

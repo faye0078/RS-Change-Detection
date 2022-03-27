@@ -76,7 +76,7 @@ class Config(object):
         if not os.path.exists(path):
             raise FileNotFoundError('File {} does not exist'.format(path))
 
-        self._model = None
+        self.model = None
         self._losses = None
         if path.endswith('yml') or path.endswith('yaml'):
             self.dic = self._parse_from_yaml(path)
@@ -285,30 +285,6 @@ class Config(object):
                 .format(len(losses['coef']), len(losses['types'])))
         return losses
 
-    @property
-    def model(self) -> paddle.nn.Layer:
-        model_cfg = self.dic.get('model').copy()
-        if not model_cfg:
-            raise RuntimeError('No model specified in the configuration file.')
-        if not 'num_classes' in model_cfg:
-            num_classes = None
-            if self.train_dataset_config:
-                if hasattr(self.train_dataset_class, 'NUM_CLASSES'):
-                    num_classes = self.train_dataset_class.NUM_CLASSES
-                elif hasattr(self.train_dataset, 'num_classes'):
-                    num_classes = self.train_dataset.num_classes
-            elif self.val_dataset_config:
-                if hasattr(self.val_dataset_class, 'NUM_CLASSES'):
-                    num_classes = self.val_dataset_class.NUM_CLASSES
-                elif hasattr(self.val_dataset, 'num_classes'):
-                    num_classes = self.val_dataset.num_classes
-
-            if num_classes is not None:
-                model_cfg['num_classes'] = num_classes
-
-        if not self._model:
-            self._model = self._load_object(model_cfg)
-        return self._model
 
     @property
     def train_dataset_config(self) -> Dict:

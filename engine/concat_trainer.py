@@ -26,10 +26,11 @@ class Trainer(object):
 
         self.val_transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms']) #
         self.nclasses = self.origin_config['model']['num_classes']
-        
+
+        self.model = get_concat_model(self.nclasses, 'hrnet', 'fcn')
+        cfg.model = self.model
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss
-        self.model = get_concat_model(self.nclasses, 'hrnet', 'fcn')
 
         if self.args.resume_model is not None:
             self.start_iter = resume(self.model, self.optimizer, self.args.resume_model)
@@ -168,7 +169,7 @@ class Trainer(object):
                                 self.model.state_dict(),
                                 os.path.join(best_model_dir, 'model.pdparams'))
                         logger.info(
-                            '[EVAL] The model with the best validation mIoU ({:.4f}) was saved at iter {}.'
+                            '[EVAL] The model with the best validation F1 ({:.4f}) was saved at iter {}.'
                                 .format(best_f1, best_model_iter))
 
                         if self.args.use_vdl:

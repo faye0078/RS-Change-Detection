@@ -52,25 +52,24 @@ def get_test_config():
     parser.add_argument(
         "--config", dest="cfg", help="The config file.", default='./experiment/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml', type=str)
     parser.add_argument(
-        '--model_path',
-        dest='model_path',
+        '--resume_model',
+        dest='resume_model',
         help='The path of model for prediction',
         type=str,
-        default=None)
+        default='./saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely/best_model/model.pdparams')
     parser.add_argument(
         '--image1_path',
         dest='image1_path',
-        help=
-        'The path of image1, it can be a file or a directory including images',
+        help='The path of image1, it can be a file or a directory including images',
         type=str,
-        default=None)
+        default='../data/data134429//DSIFN-Dataset/test/t1')
     parser.add_argument(
         '--image2_path',
         dest='image2_path',
         help=
         'The path of image2, it can be a file or a directory including images',
         type=str,
-        default=None)
+        default='../data/data134429//DSIFN-Dataset/test/t2')
     parser.add_argument(
         '--save_dir',
         dest='save_dir',

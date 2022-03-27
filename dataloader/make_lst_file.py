@@ -58,16 +58,16 @@ def ReadSaveAddr(Stra, Strb):
 
 def ReadFileBytxt(file_path):
     file = []
-    imgs = glob.glob('{}*.jpg'.format(file_path))
+    imgs = glob.glob('{}*.png'.format(file_path))
 
     for img in imgs:
-        img1 = img.replace('/media/dell/DATA/wy/data/data134429/', '')
-        img2 = img1.replace('t1', 't2')
-        label = img1.replace('t1', 'mask').replace('.jpg', '.png')
+        img1 = img.replace('/media/dell/DATA/wy/data/data14123/', '')
+        img2 = img1.replace('/A/', '/B/')
+        label = img1.replace('/A/', '/label/')
         file.append(img1 + '\t' + img2 + '\t' + label)
 
     df = pd.DataFrame(file, columns=['one'])
-    df.to_csv("/media/dell/DATA/wy/data/data134429/DSIFN-Dataset/val.lst", columns=['one'], index=False, header=False)
+    df.to_csv("/media/dell/DATA/wy/data/data14123/LEVIR-CD/val.lst", columns=['one'], index=False, header=False)
 
 if __name__ == '__main__':
     # InputStra="E:/wangyu_file/rs_Nas/src/data/datasets/VOCdevkit/512/test/label"#数据存在的路径
@@ -76,5 +76,5 @@ if __name__ == '__main__':
     # ReadSaveAddr(InputStra, InputStrb)
     # mergeFile()
     # changeFile()
-    path = "/media/dell/DATA/wy/data/data134429/DSIFN-Dataset/val/t1/"
+    path = "/media/dell/DATA/wy/data/data14123/LEVIR-CD/val/A/"
     ReadFileBytxt(path)

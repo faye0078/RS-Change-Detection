@@ -39,6 +39,7 @@ class Compose:
             im2 = cv2.imread(im2).astype('float32')
         if isinstance(label, str):
             label = np.asarray(Image.open(label))
+            label[label==255] = 1
         if im1 is None:
             raise ValueError('Can\'t read The image file {}!'.format(im1))
         if im2 is None:

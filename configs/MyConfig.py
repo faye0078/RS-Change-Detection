@@ -6,14 +6,14 @@ def get_trainer_config():
     # params of training
     parser.add_argument(
         "--config", dest="cfg", help="The config file.",
-        default='./experiment/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely.yml',
+        default='./experiment/fcn_hrnet_levir.yml',
         type=str)
     parser.add_argument(
         '--save_interval',
         dest='save_interval',
         help='How many iters to save a model snapshot once during training.',
         type=int,
-        default=100)
+        default=200)
     parser.add_argument(
         '--resume_model',
         dest='resume_model',
@@ -25,7 +25,7 @@ def get_trainer_config():
         dest='save_dir',
         help='The directory for saving the model snapshot',
         type=str,
-        default='./saved_model/fcn_hrnetw18_small_v1_humanseg_192x192_mini_supervisely')
+        default='./saved_model/fcn_hrnet_levir')
     parser.add_argument(
         '--keep_checkpoint_max',
         dest='keep_checkpoint_max',

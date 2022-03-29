@@ -27,7 +27,7 @@ class Trainer(object):
         self.val_transforms = make_transform(self.origin_config['dataset']['val_dataset']['transforms']) #
         self.nclasses = self.origin_config['model']['num_classes']
 
-        self.model = get_concat_model(self.nclasses, 'hrnet', 'fcn')
+        self.model = get_concat_model(self.nclasses, self.origin_config['model']['backbone']['type'], self.origin_config['model']['type'])
         cfg.model = self.model
         self.optimizer = cfg.optimizer
         self.losses = cfg.loss

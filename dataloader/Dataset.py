@@ -67,7 +67,6 @@ class SplitDataset(Dataset):
         im1, im2, label = self.transforms(im1_name, im2_name, lab_name)
 
         return (im1, im2, label)
-    # TODO: to_tensor? and ignore_index> and num_classes? need
 
     def __len__(self):
         return self.data_num

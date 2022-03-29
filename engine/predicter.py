@@ -85,7 +85,7 @@ class Predicter(object):
         with paddle.no_grad():
             for i, im_path in enumerate(img_lists[local_rank]):
                 im1 = cv2.imread(im_path)
-                im2 = cv2.imread(im_path.replace('t1', 't2'))
+                im2 = cv2.imread(im_path.replace('A', 'B'))
                 ori_shape = im1.shape[:2]
                 im, _ = self.transforms(im1, im2)
                 im = paddle.to_tensor(im)

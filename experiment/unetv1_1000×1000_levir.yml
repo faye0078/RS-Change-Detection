@@ -56,7 +56,7 @@ loss:
 model:
   type: fcn
   backbone:
-    type: hrnet
+    type: unetv1
     align_corners: False
   num_classes: 2
   backbone_indices: [-1]

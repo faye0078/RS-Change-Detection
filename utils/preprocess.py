@@ -38,8 +38,10 @@ class Compose:
         if isinstance(im2, str):
             im2 = cv2.imread(im2).astype('float32')
         if isinstance(label, str):
-            label = np.asarray(Image.open(label))
-            label[label==255] = 1
+            label = np.array(Image.open(label))
+            label[label == 255] = 1
+            label[label == 254] = 1
+            label[label == 156] = 1
         if im1 is None:
             raise ValueError('Can\'t read The image file {}!'.format(im1))
         if im2 is None:

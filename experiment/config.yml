@@ -1,7 +1,7 @@
 # 模型： "BIT", "DSIFN", "STANet", "SNUNet", "DSAMNet", "FCSiamConc", "FCSiamDiff", 'FCEarlyFusion'
 MODEL_NAME: 'FCEarlyFusion'
 # 数据集路径
-DATA_DIR: '../../data/data134796/'
+DATA_DIR: '../../data/data134796/dataset/'
 # 实验路径。实验目录下保存输出的模型权重和结果
 EXP_DIR: './run/'
 # 保存最佳模型的路径

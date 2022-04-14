@@ -18,7 +18,7 @@ unzip RS-Change-Detection-main.zip
 
 ### 4. 打开项目中的run.ipynb文件，逐个运行cell即可
 
-<img src="./images/2.png" style="zoom:50%" />
+<img src="./images/2.png" style="zoom:30%" />
 
 ### 5. 在experiment/config.yaml文件中修改模型种类
 

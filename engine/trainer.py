@@ -32,7 +32,7 @@ class Trainer(object):
     def train(self):
         # 调用PaddleRS API实现一键训练
         self.model.train(
-            num_epochs=400,
+            num_epochs=self.args["NUM_EPOCHS"],
             train_dataset=self.train_dataset,
             train_batch_size=self.args["BATCH_SIZE"],
             eval_dataset=self.eval_dataset,

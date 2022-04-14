@@ -82,9 +82,10 @@ def make_model(model_name):
         )
     elif model_name == 'FCEarlyFusion':
         model = pdrs.tasks.FCEarlyFusion(
-            in_channels=3,
             num_classes=2,
-            use_dropout=False
+            use_mixed_loss=False,
+            in_channels=6,
+            use_dropout=False,
         )
     logging.info('[TRAIN] model name is: {} .'
                  .format(model_name))

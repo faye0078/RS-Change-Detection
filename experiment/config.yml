@@ -1,14 +1,14 @@
-# 模型名字"FCSiamConc", "FCSiamDiff", "STANet", "BIT", "SNUNet", "DSIFN", "DSAMNet", "ChangeStar"
-MODEL_NAME: 'DSIFN'
+# 模型： "BIT", "DSIFN", "STANet", "SNUNet", "DSAMNet", "FCSiamConc", "FCSiamDiff", 'FCEarlyFusion'
+MODEL_NAME: 'FCEarlyFusion'
 # 数据集路径
-DATA_DIR: '../data/data134796/'
+DATA_DIR: '../../data/data134796/'
 # 实验路径。实验目录下保存输出的模型权重和结果
 EXP_DIR: './run/'
 # 保存最佳模型的路径
 BEST_CKP_PATH:
 
 # 训练的epoch数
-NUM_EPOCHS: 100
+NUM_EPOCHS: 200
 # 每多少个epoch保存一次模型权重参数
 SAVE_INTERVAL_EPOCHS: 5
 # 初始学习率

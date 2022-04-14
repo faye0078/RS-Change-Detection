@@ -1,43 +1,43 @@
-# Copyright (c) 2020 PaddlePaddle Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+import sys
+sys.path.append('./PaddleRS')
+import argparse
+import random
 import os
+import numpy as np
 import paddle
-from model.concat_model import get_concat_model
-from model.split_model import get_split_model
-from engine.predicter import Predicter
-from utils.preprocess import make_transform
-from dataloader import make_dataloader
+from engine.predictor import Predictor
 from utils.yaml import _parse_from_yaml
-from configs.MyConfig import get_test_config
-from configs.config import Config
-from paddleseg.utils import get_sys_env, logger
+
+# 固定gpu
+paddle.device.set_device("gpu:0")
+
+# 固定随机种子
+SEED = 1919810
+random.seed(SEED)
+np.random.seed(SEED)
+paddle.seed(SEED)
+
+def main():
+    # 命令行读取yaml文件名
+    parser = argparse.ArgumentParser(description='Model training')
+    parser.add_argument("--config", dest="cfg", help="The config file.", default='./experiment/config.yml', type=str)
+    # 读取yaml参数
+    args = parser.parse_args()
+    args = _parse_from_yaml(args.cfg)
+    args["EXP_DIR"] = args["EXP_DIR"] + args["MODEL_NAME"] + '/'
+
+    predictor = Predictor(args)
+
+    # 若输出目录不存在，则新建之（递归创建目录）
+    out_dir = os.path.join(args["EXP_DIR"], 'out')
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    predictor.predict(out_dir)
+
+if __name__ == "__main__":
+    main()
 
 
-def main(args):
-    env_info = get_sys_env()
-    place = 'gpu:2' if env_info['Paddle compiled with cuda'] and env_info[
-        'GPUs used'] else 'cpu'
 
-    paddle.set_device(place)
-    if not args.cfg:
-        raise RuntimeError('No configuration file specified.')
-    predicter = Predicter(args)
-    predicter.predict(
-        save_dir=args.save_dir
-    )
 
-if __name__ == '__main__':
-    args = get_test_config()
-    main(args)

@@ -1,4 +1,4 @@
-from model.backbone import hrnet, vit, swt, UNetv1, UNetv2
+from model.backbone import hrnet, UNetv1, UNetv2
 from paddleseg.models import ocrnet, deeplab, fcn
 
 

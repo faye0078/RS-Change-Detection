@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import os
-
+import paddle
 def mkdir(path):
     sub_dir = os.path.dirname(path)
     if not os.path.exists(sub_dir):
@@ -29,6 +29,18 @@ def toBinary(image_path):
             os.path.splitext(img_file)[0] + ".png")
         mkdir(pred_bin_saved_path)
         cv2.imwrite(pred_bin_saved_path, img)
+
+# 定义一些辅助函数
+def info(msg, **kwargs):
+    print(msg, **kwargs)
+
+
+def warn(msg, **kwargs):
+    print('\033[0;31m'+msg, **kwargs)
+
+
+def quantize(arr):
+    return (arr*255).astype('uint8')
 
 
 if __name__ == '__main__':

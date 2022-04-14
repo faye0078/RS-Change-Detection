@@ -1,0 +1,29 @@
+# 模型名字"FCSiamConc", "FCSiamDiff", "STANet", "BIT", "SNUNet", "DSIFN", "DSAMNet", "ChangeStar"
+MODEL_NAME: 'DSIFN'
+# 数据集路径
+DATA_DIR: '../data/data134796/'
+# 实验路径。实验目录下保存输出的模型权重和结果
+EXP_DIR: './run/'
+# 保存最佳模型的路径
+BEST_CKP_PATH:
+
+# 训练的epoch数
+NUM_EPOCHS: 100
+# 每多少个epoch保存一次模型权重参数
+SAVE_INTERVAL_EPOCHS: 5
+# 初始学习率
+LR: 0.001
+# 学习率衰减步长（注意，单位为迭代次数而非epoch数），即每多少次迭代将学习率衰减一半
+DECAY_STEP: 1000
+# batch size
+BATCH_SIZE: 8
+# 加载数据所使用的进程数
+NUM_WORKERS: 4
+# 裁块大小
+CROP_SIZE: 256
+# 模型推理阶段使用的滑窗步长
+STRIDE: 64
+# 影像原始大小
+ORIGINAL_SIZE: [1024, 1024]
+# 预训练网络路径
+RESUME:

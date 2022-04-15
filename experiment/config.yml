@@ -17,6 +17,8 @@ LR: 0.001
 DECAY_STEP: 1000
 # batch size
 BATCH_SIZE: 8
+# 推理阶段 batch size
+INFER_BATCH_SIZE = 16
 # 加载数据所使用的进程数
 NUM_WORKERS: 4
 # 裁块大小

@@ -33,7 +33,10 @@ class Predictor(object):
         len_test = len(self.test_dataset.names)
         with paddle.no_grad():
             for name, (t1, t2) in tqdm(zip(self.test_dataset.names, self.test_dataloader), total=len_test):
-                pred = self.model.net(t1, t2)[0]
+                shape = paddle.shape(t1)
+                pred = paddle.zeros(shape=(shape[0], 2, *shape[2:]))
+                for i in range(0, shape[0], self.args["INFER_BATCH_SIZE"]):
+                    pred[i:i+self.args["INFER_BATCH_SIZE"]] = self.model.net(t1[i:i+self.args["INFER_BATCH_SIZE"]], t2[i:i+self.args["INFER_BATCH_SIZE"]])[0]
                 # 取softmax结果的第1（从0开始计数）个通道的输出作为变化概率
                 prob = paddle.nn.functional.softmax(pred, axis=1)[:, 1]
                 # 由patch重建完整概率图

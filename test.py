@@ -9,7 +9,7 @@ from engine.predictor import Predictor
 from utils.yaml import _parse_from_yaml
 
 # 固定gpu
-paddle.device.set_device("gpu:0")
+paddle.device.set_device("gpu:1")
 
 # 固定随机种子
 SEED = 1919810

@@ -29,3 +29,5 @@ STRIDE: 64
 ORIGINAL_SIZE: [1024, 1024]
 # 预训练网络路径
 RESUME:
+# 最终的分类阈值
+THRESHOLD: 0.55

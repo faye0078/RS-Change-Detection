@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="dell@e80e6df1b5a94137.natapp.cc:30055 password (1)">
+  <component name="PublishConfigData" autoUpload="Always" serverName="RS-CD">
     <serverData>
-      <paths name="dell@e80e6df1b5a94137.natapp.cc:30055">
+      <paths name="RS-CD">
         <serverdata>
           <mappings>
             <mapping deploy="/media/dell/DATA/wy/RS-Change-Detection" local="$PROJECT_DIR$" web="/" />
           </mappings>
           <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/.idea" />
+            <excludedPath path="/media/dell/DATA/wy/RS-Change-Detection/run" />
           </excludedPaths>
         </serverdata>
       </paths>
-      <paths name="dell@e80e6df1b5a94137.natapp.cc:30055 password">
+      <paths name="dell@3193e5d67a2e8280.natapp.cc:26687 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="dell@e80e6df1b5a94137.natapp.cc:30055 password (1)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/media/dell/DATA/wy/RS-Change-Detection" local="$PROJECT_DIR$" />
+            <mapping deploy="/tmp/pycharm_project_962" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

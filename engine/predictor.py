@@ -42,7 +42,7 @@ class Predictor(object):
                 # 由patch重建完整概率图
                 prob = recons_prob_map(prob.numpy(), self.args["ORIGINAL_SIZE"], self.args["CROP_SIZE"], self.args["STRIDE"])
                 # 默认将阈值设置为0.5，即，将变化概率大于0.5的像素点分为变化类
-                out = quantize(prob > 0.5)
+                out = quantize(prob > self.args["THRESHOLD"])
 
                 imsave(osp.join(out_dir, name), out, check_contrast=False)
 

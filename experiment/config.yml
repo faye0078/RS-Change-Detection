@@ -1,7 +1,7 @@
 # 模型： "BIT", "DSIFN", "STANet", "SNUNet", "DSAMNet", "FCSiamConc", "FCSiamDiff", 'FCEarlyFusion'
 MODEL_NAME: 'FCEarlyFusion'
 # 数据集路径
-DATA_DIR: '../../data/data134796/dataset/'
+DATA_DIR: '../data/data134796/dataset/'
 # 实验路径。实验目录下保存输出的模型权重和结果
 EXP_DIR: './run/'
 # 保存最佳模型的路径
@@ -18,7 +18,7 @@ DECAY_STEP: 1000
 # batch size
 BATCH_SIZE: 8
 # 推理阶段 batch size
-INFER_BATCH_SIZE = 16
+INFER_BATCH_SIZE: 16
 # 加载数据所使用的进程数
 NUM_WORKERS: 4
 # 裁块大小

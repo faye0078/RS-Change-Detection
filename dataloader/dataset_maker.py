@@ -17,6 +17,10 @@ def make_train_dataset(args):
             # 裁剪区域相对原始影像长宽比例在一定范围内变动，最小不低于原始长宽的1/5
             scaling=[0.2, 1.0]
         ),
+        # 以50%的概率颜色失真
+        T.RandomDistort(random_apply=False),
+        # 以10%的概率雾化
+        T.RandomBlur(),
         # 以50%的概率实施随机水平翻转
         T.RandomHorizontalFlip(prob=0.5),
         # 以50%的概率实施随机垂直翻转
@@ -28,7 +32,10 @@ def make_train_dataset(args):
         )
     ])
     eval_transforms = T.Compose([
-        # 在验证阶段，输入原始尺寸影像，对输入影像仅进行归一化处理
+        # 以50%的概率颜色失真
+        T.RandomDistort(random_apply=False),
+        # 以10%的概率雾化
+        T.RandomBlur(),
         # 验证阶段与训练阶段的数据归一化方式必须相同
         T.Normalize(
             mean=[0.3937, 0.3895, 0.3350],

@@ -5,11 +5,10 @@ import random
 import os
 import numpy as np
 import paddle
+# 固定gpu
+paddle.device.set_device("gpu")
 from engine.trainer import Trainer
 from utils.yaml import _parse_from_yaml
-
-# 固定gpu
-paddle.device.set_device("gpu:0")
 
 # 固定随机种子
 SEED = 1919810

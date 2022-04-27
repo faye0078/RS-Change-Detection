@@ -48,31 +48,36 @@ if __name__ == '__main__':
     val_data = '../../Datasets/cup/val.txt'  # 图像数据集的路径
     test_data = '../../Datasets/cup/test.txt'  # 图像数据集的路径
 
-    file = open(all_data, 'r')
-    lines = file.readlines()
-    img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
-    img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
-    draw(root_dir, img_list_A, "all_A.jpg")
-    draw(root_dir, img_list_B, "all_B.jpg")
-
     file = open(train_data, 'r')
     lines = file.readlines()
-    img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
-    img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
-    draw(root_dir, img_list_A, "train_A.jpg")
-    draw(root_dir, img_list_B, "train_B.jpg")
+    img_list_A = [line.strip('\n').split(' ')[0].split('/')[-1] for line in lines]
+    draw(root_dir + 'processed/', img_list_A, "after_A_1.jpg")
 
-    file = open(val_data, 'r')
-    lines = file.readlines()
-    img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
-    img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
-    draw(root_dir, img_list_A, "val_A.jpg")
-    draw(root_dir, img_list_B, "val_B.jpg")
-
-    file = open(test_data, 'r')
-    lines = file.readlines()
-    img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
-    img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
-    draw(root_dir, img_list_A, "test_A.jpg")
-    draw(root_dir, img_list_B, "test_B.jpg")
+    # file = open(all_data, 'r')
+    # lines = file.readlines()
+    # img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
+    # img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
+    # draw(root_dir, img_list_A, "all_A.jpg")
+    # draw(root_dir, img_list_B, "all_B.jpg")
+    #
+    # file = open(train_data, 'r')
+    # lines = file.readlines()
+    # img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
+    # img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
+    # draw(root_dir, img_list_A, "train_A.jpg")
+    # draw(root_dir, img_list_B, "train_B.jpg")
+    #
+    # file = open(val_data, 'r')
+    # lines = file.readlines()
+    # img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
+    # img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
+    # draw(root_dir, img_list_A, "val_A.jpg")
+    # draw(root_dir, img_list_B, "val_B.jpg")
+    #
+    # file = open(test_data, 'r')
+    # lines = file.readlines()
+    # img_list_A = [line.strip('\n').split(' ')[0] for line in lines]
+    # img_list_B = [line.strip('\n').split(' ')[1] for line in lines]
+    # draw(root_dir, img_list_A, "test_A.jpg")
+    # draw(root_dir, img_list_B, "test_B.jpg")
 
